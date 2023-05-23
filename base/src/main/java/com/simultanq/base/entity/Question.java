@@ -20,6 +20,30 @@ public class Question {
     @JoinColumn(name = "question_id")
     private List<Answer> answers;
 
-    // constructors, getters, and setters
+    public Question() {
+
+    }
+
+    public Question(String text, List<Answer> answers) {
+        this.text = text;
+        this.answers = answers;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
 }
 

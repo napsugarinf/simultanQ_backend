@@ -15,5 +15,27 @@ public class Answer {
 
     private boolean correct;
 
-    // constructors, getters, and setters
+    public Answer() {
+    }
+
+    public Answer(String description, boolean correct) {
+        this.description = description;
+        this.correct = correct;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isCorrect() {
+        return correct;
+    }
+
+    public void setCorrect(boolean correct) {
+        this.correct = correct;
+    }
 }

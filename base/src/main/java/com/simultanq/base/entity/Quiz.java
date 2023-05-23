@@ -11,7 +11,7 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long PIN;
+    private String PIN;
 
     //@NotBlank
     private String title;
@@ -20,7 +20,38 @@ public class Quiz {
     @JoinColumn(name = "quiz_id")
     private List<Question> questions;
 
+    public Quiz() {
+    }
 
+    public Quiz(String PIN, String title, List<Question> questions) {
+        this.PIN = PIN;
+        this.title = title;
+        this.questions = questions;
+    }
+
+    public String getPIN() {
+        return PIN;
+    }
+
+    public void setPIN(String PIN) {
+        this.PIN = PIN;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
 }
 
 
