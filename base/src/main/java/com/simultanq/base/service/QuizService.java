@@ -1,14 +1,15 @@
 package com.simultanq.base.service;
 
-import com.simultanq.base.entity.Question;
 import com.simultanq.base.entity.Quiz;
 import com.simultanq.base.repository.QuestionRepository;
 import com.simultanq.base.repository.QuizRepository;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -38,6 +39,15 @@ public class QuizService {
             throw new RuntimeException(e);
         }
     }
+
+//    public Optional<Quiz> getQuizByPIN(String PIN){
+//        Optional <Quiz> quiz = quizRepository.findByPIN(PIN);
+//        if (quiz.isEmpty()){
+//            throw new ServiceException("Sorry, no quiz by this PIN!");
+//
+//        }
+//        return quiz;
+//    }
 
     public Quiz createQuiz(Quiz quiz) {
         return quizRepository.save(quiz);

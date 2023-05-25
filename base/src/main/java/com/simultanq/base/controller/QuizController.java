@@ -1,17 +1,17 @@
 package com.simultanq.base.controller;
 
 
-import com.simultanq.base.entity.Question;
 import com.simultanq.base.entity.Quiz;
-import com.simultanq.base.service.QuestionService;
 import com.simultanq.base.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/quizes")
+@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/api/quizzes")
 public class QuizController {
 
     @Autowired
