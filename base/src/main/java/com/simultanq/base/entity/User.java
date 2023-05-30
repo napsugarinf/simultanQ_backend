@@ -16,26 +16,6 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-//public class User {
-//    @Id
-//    @JsonIgnore
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_gen")
-//    @SequenceGenerator(name = "users_gen", sequenceName = "users_seq", allocationSize = 1)
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Include
-//    @Column(name = "id")
-//    private Long id;
-//
-//    @NotBlank(message = "Username is mandatory")
-//    private String username;
-//
-//    @ToString.Exclude
-//    private String password;
-//
-//    @ToString.Exclude
-//    private String token;
-//}
-
 
     public class User {
 
@@ -50,10 +30,18 @@ import java.util.List;
         //@NotBlank
         private String password;
 
+        private String email;
+
         @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        @JoinColumn(name = "quiz_id")
+        @JoinColumn(name = "user_id")
         private List<Quiz> quizzes;
 
-        // constructors, getters, and setters
+    public User(Long id, String username, String password, String email) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+// constructors, getters, and setters
     }
 
