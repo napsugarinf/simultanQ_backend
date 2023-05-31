@@ -2,7 +2,9 @@ package com.simultanq.base.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Table(name = "quizzes")
@@ -11,10 +13,11 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String PIN;
+    private String PIN=generateRandomPIN();
 
     //@NotBlank
     private String title;
+
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
@@ -27,8 +30,7 @@ public class Quiz {
     public Quiz() {
     }
 
-    public Quiz(String PIN, String title, List<Question> questions) {
-        this.PIN = PIN;
+    public Quiz(String title, List<Question> questions) {
         this.title = title;
         this.questions = questions;
     }
@@ -59,6 +61,21 @@ public class Quiz {
     public void setResults(List<Result> results) {
         this.results = results;
     }
+
+
+    public String generateRandomPIN() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(900000) + 100000; // Generate a 6-digit number
+        return String.valueOf(randomNumber);
+    }
+
+//    public boolean isAvailable() {
+//        return isAvailable;
+//    }
+//
+//    public void setAvailable(boolean available) {
+//        isAvailable = available;
+//    }
 }
 
 

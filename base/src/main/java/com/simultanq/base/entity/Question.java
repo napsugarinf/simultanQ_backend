@@ -20,6 +20,9 @@ public class Question {
     @JoinColumn(name = "question_id")
     private List<Answer> answers;
 
+
+    @Transient
+    private Long correctAnswerId;
     public Question() {
 
     }
@@ -45,5 +48,20 @@ public class Question {
         this.answers = answers;
     }
 
+
+    public Long getCorrectAnswerId() {
+        if (correctAnswerId != null) {
+            return correctAnswerId;
+        }
+
+        for (Answer answer : answers) {
+            if (answer.isCorrect()) {
+                correctAnswerId = answer.getId();
+                break;
+            }
+        }
+
+        return correctAnswerId;
+    }
 }
 

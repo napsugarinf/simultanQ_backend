@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 @Table(name = "answers")
 public class Answer {
 
+
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,4 +41,10 @@ public class Answer {
     public void setCorrect(boolean correct) {
         this.correct = correct;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+
 }

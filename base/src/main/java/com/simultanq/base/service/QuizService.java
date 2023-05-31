@@ -40,6 +40,8 @@ public class QuizService {
         }
     }
 
+
+
 //    public Optional<Quiz> getQuizByPIN(String PIN){
 //        Optional <Quiz> quiz = quizRepository.findByPIN(PIN);
 //        if (quiz.isEmpty()){
@@ -59,6 +61,13 @@ public class QuizService {
         quiz.setQuestions(updatedQuiz.getQuestions());
         return quizRepository.save(quiz);
     }
+
+//    public Quiz makeQuizVisible(String PIN){
+//        Quiz quiz = getQuizByPIN(PIN);
+//        quiz.setAvailable(true);
+//        return quizRepository.save(quiz);
+//
+//    }
 
     public void deleteQuiz(Long id) {
         quizRepository.deleteById(id);
