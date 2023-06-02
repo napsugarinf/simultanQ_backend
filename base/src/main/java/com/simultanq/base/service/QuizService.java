@@ -62,6 +62,16 @@ public class QuizService {
         return quizRepository.save(quiz);
     }
 
+    public List<Quiz> getQuizzesByUserId(String userId){
+        try {
+            return quizRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+        } catch (ChangeSetPersister.NotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 //    public Quiz makeQuizVisible(String PIN){
 //        Quiz quiz = getQuizByPIN(PIN);
 //        quiz.setAvailable(true);

@@ -33,10 +33,31 @@ public class QuizController {
         return quizService.getQuizById(id);
     }
 
+//    @GetMapping("/pin/{PIN}")
+//    public Quiz getQuizByPIN(@PathVariable String PIN) {
+//        return quizService.getQuizByPIN(PIN);
+//    }
     @GetMapping("/pin/{PIN}")
-    public Quiz getQuizByPIN(@PathVariable String PIN) {
-        return quizService.getQuizByPIN(PIN);
+    public ResponseEntity<?> getQuizByPIN(@PathVariable String PIN) {
+        Quiz quiz = quizService.getQuizByPIN(PIN);
+        if (quiz != null) {
+            return ResponseEntity.ok(quiz);
+        } else {
+            String errorMessage = "Quiz does not exist with PIN: " + PIN;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        }
     }
+    @GetMapping("/userid/{userId}")
+    public ResponseEntity<?> getQuizzesByUserId(@PathVariable String userId) {
+        List<Quiz> quizzes = quizService.getQuizzesByUserId(userId);
+        if (quizzes != null) {
+            return ResponseEntity.ok(quizzes);
+        } else {
+            String errorMessage = "Quizzes do not exist with UserId: " + userId;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        }
+    }
+
 
 //    @GetMapping("/pin/{PIN}")
 //    public ResponseEntity<Quiz> getQuizByPIN(@PathVariable String PIN) {

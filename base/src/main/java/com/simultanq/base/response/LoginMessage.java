@@ -1,12 +1,22 @@
 package com.simultanq.base.response;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginMessage {
     String message;
     Boolean status;
 
-    public LoginMessage(String message, Boolean status) {
-        this.message = message;
-        this.status = status;
+    Long userId;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getMessage() {
@@ -24,4 +34,6 @@ public class LoginMessage {
     public void setStatus(Boolean status) {
         this.status = status;
     }
+
+
 }

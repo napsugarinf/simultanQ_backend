@@ -45,16 +45,17 @@ public class UserService {
             if (isPwdRight) {
                 Optional<User> user = userRepository.findOneByEmailAndPassword(loginDTO.getEmail(), encodedPassword);
                 if (user.isPresent()) {
-                    return new LoginMessage("Login success", true);
+                    Long id = user.get().getId();
+                    return new LoginMessage("Login success", true, id);
                 } else {
-                    return new LoginMessage("Login failed!", false);
+                    return new LoginMessage("Login failed!", false, null);
                 }
             } else {
-                return new LoginMessage("Password not match", false);
+                return new LoginMessage("Password not match", false, null);
             }
         }
         else {
-            return new LoginMessage("Email does not exists", false);
+            return new LoginMessage("Email does not exists", false, null);
         }
 
     }

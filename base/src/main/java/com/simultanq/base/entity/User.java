@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 
     public class User {
 
@@ -32,9 +31,6 @@ import java.util.List;
 
         private String email;
 
-        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
-        private List<Quiz> quizzes;
 
     public User(Long id, String username, String password, String email) {
         this.id = id;
@@ -42,6 +38,11 @@ import java.util.List;
         this.password = password;
         this.email = email;
     }
-// constructors, getters, and setters
+
+    public Long getId() {
+        return id;
+    }
+
+    // constructors, getters, and setters
     }
 

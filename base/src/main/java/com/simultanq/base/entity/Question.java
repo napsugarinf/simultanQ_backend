@@ -9,6 +9,10 @@ import java.util.List;
 @Table(name = "questions")
 public class Question {
 
+    public Long getId() {
+        return id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,7 +20,7 @@ public class Question {
     //@NotBlank
     private String text;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private List<Answer> answers;
 
