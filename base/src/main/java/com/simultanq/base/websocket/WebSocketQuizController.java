@@ -3,6 +3,7 @@ import com.simultanq.base.entity.Question;
 import com.simultanq.base.entity.Quiz;
 import com.simultanq.base.entity.dto.QuizDTO;
 import com.simultanq.base.helper.DTOConverters;
+import com.simultanq.base.service.QuestionService;
 import com.simultanq.base.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,19 +34,32 @@ public class WebSocketQuizController {
     QuizService quizService;
 
     @Autowired
+    private
+    QuestionService questionService;
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
 
+    //private Map<String, Map<String, Integer>> participants = new HashMap<>();
     private Map<String, Integer> participants = new HashMap<>();
-
     @MessageMapping("/startQuiz/{quizPin}/{playerId}")
     //@SendTo("/startQuiz/{quizPin}/{playerId}")
     public void startQuiz(@DestinationVariable String quizPin,
                           @Header("playerId") String playerId) {
         // Retrieve quiz object based on the provided quizPin
         Quiz quiz = quizService.getQuizByPIN(quizPin);
-        participants.put(playerId,0);
+        int score = 0;
+
+//        if (!participants.containsKey(quizPin)) {
+//            participants.put(quizPin, new HashMap<>());
+//        }
+        //participants.get(quizPin).put(playerId, score);
+
+        participants.put(playerId,score);
+        sendparticipants(quizPin);
         List<Question> questions = quiz.getQuestions();
+        System.out.println(participants);
         if (!questions.isEmpty()) {
             // Send the first question to the corresponding quiz room
             messagingTemplate.convertAndSend("/quiz/" + quizPin + "/"+ playerId, questions.get(0));
@@ -66,6 +80,17 @@ public class WebSocketQuizController {
 
         // Get the next question based on the current questionId
         Quiz quiz = quizService.getQuizByPIN(quizPin);
+        Question question = questionService.getQuestionById(questionId);
+        boolean isCorrect = checkResponse(question, response);
+        System.out.println(isCorrect);
+        int points = isCorrect ? 1 : 0;
+
+        //updateScore(quizPin, playerId, points);
+
+        updateScore(playerId, participants.get(playerId), points);
+
+        System.out.println(participants);
+        sendparticipants(quizPin);
         Question nextQuestion = getNextQuestion(quiz, questionId);
         if (nextQuestion != null) {
             // Send the next question to the corresponding quiz room
@@ -75,17 +100,14 @@ public class WebSocketQuizController {
             // Last question, send a special message indicating the end of the quiz
             messagingTemplate.convertAndSend("/quiz/" + quizPin + "/"+ playerId, "Quiz completed");
         }
-        messagingTemplate.convertAndSend("/sendparticipants/" + quizPin, participants);
+
     }
 
 
-    @MessageMapping("/sendparticipants")
-    @SendTo("/sendparticipants")
-    public String sendparticipants(){
-        participants.put("Anne", 10);
-        participants.put("Reick", 25);
-        System.out.println("It works!");
-        return "hello";
+    @MessageMapping("/sendparticipants/{quizPin}")
+    //@SendTo("/sendparticipants")
+    public void sendparticipants(@DestinationVariable String quizPin){
+        messagingTemplate.convertAndSend("/quiz/" + quizPin, participants);
     }
 
 
@@ -104,4 +126,26 @@ public class WebSocketQuizController {
         return null;
     }
 
+
+//    private void updateScore(String quizPin, String playerId, int points) {
+//        if (participants.containsKey(quizPin)) {
+//            Map<String, Integer> quizParticipants = participants.get(quizPin);
+//            if (quizParticipants.containsKey(playerId)) {
+//                int score = quizParticipants.get(playerId);
+//                quizParticipants.put(playerId, score + points);
+//            }
+//        }
+//
+//        //participants.put(playerId, score + points);
+//    }
+
+    private void updateScore(String playerId, int score, int points) {
+         participants.put(playerId, score + points);
+    }
+
+    private boolean checkResponse(Question question, String response) {
+        Long correctAnswerId = question.getCorrectAnswerId();
+        // Compare the response with the correct answer's ID
+        return response.equals(String.valueOf(correctAnswerId));
+    }
 }
