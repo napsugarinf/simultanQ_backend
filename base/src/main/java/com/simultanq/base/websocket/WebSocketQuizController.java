@@ -40,29 +40,28 @@ public class WebSocketQuizController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    private Map<String, Map<String, Integer>> participants = new HashMap<>();
 
-    //private Map<String, Map<String, Integer>> participants = new HashMap<>();
-    private Map<String, Integer> participants = new HashMap<>();
+//    //private Map<String, Integer> participants = new HashMap<>();
+
     @MessageMapping("/startQuiz/{quizPin}/{playerId}")
-    //@SendTo("/startQuiz/{quizPin}/{playerId}")
     public void startQuiz(@DestinationVariable String quizPin,
                           @Header("playerId") String playerId) {
-        // Retrieve quiz object based on the provided quizPin
+        
         Quiz quiz = quizService.getQuizByPIN(quizPin);
         int score = 0;
 
-//        if (!participants.containsKey(quizPin)) {
-//            participants.put(quizPin, new HashMap<>());
-//        }
-        //participants.get(quizPin).put(playerId, score);
+        if (!participants.containsKey(quizPin)) {
+            participants.put(quizPin, new HashMap<>());
+        }
 
-        participants.put(playerId,score);
+        participants.get(quizPin).put(playerId, score);
+
         sendparticipants(quizPin);
+
         List<Question> questions = quiz.getQuestions();
-        System.out.println(participants);
         if (!questions.isEmpty()) {
-            // Send the first question to the corresponding quiz room
-            messagingTemplate.convertAndSend("/quiz/" + quizPin + "/"+ playerId, questions.get(0));
+            messagingTemplate.convertAndSend("/quiz/" + quizPin + "/" + playerId, questions.get(0));
         }
     }
 
@@ -71,44 +70,39 @@ public class WebSocketQuizController {
                                @DestinationVariable Long questionId,
                                String response,
                                @Header("playerId") String playerId) {
-        // Handle the client's response for the given quizPin and questionId
-        // You can save the response in the database or perform any necessary processing
-
-        // Example: Print the received response
-        System.out.println("Received response for quizPin: " + quizPin + ", playerId: "+ playerId+", questionId: " + questionId);
-        System.out.println("Response: " + response);
-
-        // Get the next question based on the current questionId
         Quiz quiz = quizService.getQuizByPIN(quizPin);
         Question question = questionService.getQuestionById(questionId);
         boolean isCorrect = checkResponse(question, response);
-        System.out.println(isCorrect);
         int points = isCorrect ? 1 : 0;
 
-        //updateScore(quizPin, playerId, points);
+        updateScore(quizPin, playerId, points);
 
-        updateScore(playerId, participants.get(playerId), points);
-
-        System.out.println(participants);
         sendparticipants(quizPin);
+
         Question nextQuestion = getNextQuestion(quiz, questionId);
         if (nextQuestion != null) {
-            // Send the next question to the corresponding quiz room
-            messagingTemplate.convertAndSend("/quiz/" + quizPin + "/"+ playerId, nextQuestion);
-
+            messagingTemplate.convertAndSend("/quiz/" + quizPin + "/" + playerId, nextQuestion);
         } else {
-            // Last question, send a special message indicating the end of the quiz
-            messagingTemplate.convertAndSend("/quiz/" + quizPin + "/"+ playerId, "Quiz completed");
+            messagingTemplate.convertAndSend("/quiz/" + quizPin + "/" + playerId, "Quiz completed");
         }
-
     }
-
 
     @MessageMapping("/sendparticipants/{quizPin}")
-    //@SendTo("/sendparticipants")
-    public void sendparticipants(@DestinationVariable String quizPin){
-        messagingTemplate.convertAndSend("/quiz/" + quizPin, participants);
+    public void sendparticipants(@DestinationVariable String quizPin) {
+        messagingTemplate.convertAndSend("/quiz/" + quizPin, participants.get(quizPin));
     }
+
+    private void updateScore(String quizPin, String playerId, int points) {
+        if (participants.containsKey(quizPin)) {
+            Map<String, Integer> quizParticipants = participants.get(quizPin);
+            if (quizParticipants.containsKey(playerId)) {
+                int score = quizParticipants.get(playerId);
+                quizParticipants.put(playerId, score + points);
+            }
+        }
+    }
+
+
 
 
     private Question getNextQuestion(Quiz quiz, Long currentQuestionId) {
@@ -127,21 +121,6 @@ public class WebSocketQuizController {
     }
 
 
-//    private void updateScore(String quizPin, String playerId, int points) {
-//        if (participants.containsKey(quizPin)) {
-//            Map<String, Integer> quizParticipants = participants.get(quizPin);
-//            if (quizParticipants.containsKey(playerId)) {
-//                int score = quizParticipants.get(playerId);
-//                quizParticipants.put(playerId, score + points);
-//            }
-//        }
-//
-//        //participants.put(playerId, score + points);
-//    }
-
-    private void updateScore(String playerId, int score, int points) {
-         participants.put(playerId, score + points);
-    }
 
     private boolean checkResponse(Question question, String response) {
         Long correctAnswerId = question.getCorrectAnswerId();
