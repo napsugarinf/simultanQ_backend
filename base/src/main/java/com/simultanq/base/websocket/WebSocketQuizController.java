@@ -12,17 +12,18 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.security.Principal;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 
 @Controller
@@ -42,12 +43,14 @@ public class WebSocketQuizController {
 
     private Map<String, Map<String, Integer>> participants = new HashMap<>();
 
+    private Map<String, Long> quizTimers = new HashMap<>();
+
 //    //private Map<String, Integer> participants = new HashMap<>();
 
     @MessageMapping("/startQuiz/{quizPin}/{playerId}")
     public void startQuiz(@DestinationVariable String quizPin,
                           @Header("playerId") String playerId) {
-        
+
         Quiz quiz = quizService.getQuizByPIN(quizPin);
         int score = 0;
 
@@ -58,6 +61,7 @@ public class WebSocketQuizController {
         participants.get(quizPin).put(playerId, score);
 
         sendparticipants(quizPin);
+        startQuizTimer(quizPin);
 
         List<Question> questions = quiz.getQuestions();
         if (!questions.isEmpty()) {
@@ -127,4 +131,43 @@ public class WebSocketQuizController {
         // Compare the response with the correct answer's ID
         return response.equals(String.valueOf(correctAnswerId));
     }
+
+    private void startQuizTimer(String quizPin) {
+        if (!quizTimers.containsKey(quizPin)) {
+            long currentTime = System.currentTimeMillis();
+            quizTimers.put(quizPin, currentTime);
+        }
+    }
+
+    @Bean // Add this bean to the configuration class
+    public ScheduledExecutorService quizTimerExecutor() {
+        return Executors.newScheduledThreadPool(1);
+    }
+
+    @Scheduled(fixedDelay = 1000) // Runs every second
+    public void checkQuizTimeLimits() {
+        for (String quizPin : quizTimers.keySet()) {
+            long quizStartTime = quizTimers.get(quizPin);
+            long currentTime = System.currentTimeMillis();
+            long elapsedTimeInSeconds = (currentTime - quizStartTime) / 1000;
+
+            if (elapsedTimeInSeconds >= 30) { // Time limit is 2 minutes (120 seconds)
+                endQuiz(quizPin);
+            }
+        }
+    }
+    private void endQuiz(String quizPin) {
+        // Perform any necessary actions when the quiz time limit is reached
+        // For example, you can notify participants that the quiz has ended
+        // and calculate final scores or perform any other logic you need.
+        // You can access the participants using participants.get(quizPin) and
+        // perform any required operations.
+        messagingTemplate.convertAndSend("/quiz/" + quizPin, "Quiz over");
+        // Clear the participants and timer for the quiz
+       // participants.remove(quizPin);
+        //quizTimers.remove(quizPin);
+    }
+
+
+
 }

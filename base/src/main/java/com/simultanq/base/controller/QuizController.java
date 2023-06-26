@@ -88,48 +88,48 @@ public class QuizController {
     public void deleteQuiz(@PathVariable Long id) {
         quizService.deleteQuiz(id);
     }
-
-    @PostMapping("/{PIN}/submitAnswers")
-    public ResponseEntity<String> submitAnswers(
-            @PathVariable String pin,
-            @RequestBody List<Answer> userAnswers
-    ) {
-        Quiz quiz = quizService.getQuizByPIN(pin);
-
-        // Get the questions from the quiz
-        List<Question> questions = quiz.getQuestions();
-
-        // Validate the submitted answers
-        if (userAnswers.size() != questions.size()) {
-            return ResponseEntity.badRequest().body("Invalid number of answers submitted.");
-        }
-
-        // Calculate the score
-        int score = calculateScore(userAnswers, questions);
-
-        // Perform any other required processing based on your scoring logic
-
-        // Return the score
-        return ResponseEntity.ok("Your score: " + score);
-    }
-
-    private int calculateScore(List<Answer> userAnswers, List<Question> questions) {
-        int score = 0;
-
-        for (int i = 0; i < userAnswers.size(); i++) {
-            Answer userAnswer = userAnswers.get(i);
-            Question question = questions.get(i);
-
-            // Compare the user's answer with the correct answer for each question
-            if (userAnswer.isCorrect() && userAnswer.getId().equals(question.getCorrectAnswerId())) {
-                score++;
-            }
-        }
-
-        return score;
-
-
-    }
+//
+//    @PostMapping("/{PIN}/submitAnswers")
+//    public ResponseEntity<String> submitAnswers(
+//            @PathVariable String pin,
+//            @RequestBody List<Answer> userAnswers
+//    ) {
+//        Quiz quiz = quizService.getQuizByPIN(pin);
+//
+//        // Get the questions from the quiz
+//        List<Question> questions = quiz.getQuestions();
+//
+//        // Validate the submitted answers
+//        if (userAnswers.size() != questions.size()) {
+//            return ResponseEntity.badRequest().body("Invalid number of answers submitted.");
+//        }
+//
+//        // Calculate the score
+//        int score = calculateScore(userAnswers, questions);
+//
+//        // Perform any other required processing based on your scoring logic
+//
+//        // Return the score
+//        return ResponseEntity.ok("Your score: " + score);
+//    }
+//
+//    private int calculateScore(List<Answer> userAnswers, List<Question> questions) {
+//        int score = 0;
+//
+//        for (int i = 0; i < userAnswers.size(); i++) {
+//            Answer userAnswer = userAnswers.get(i);
+//            Question question = questions.get(i);
+//
+//            // Compare the user's answer with the correct answer for each question
+//            if (userAnswer.isCorrect() && userAnswer.getId().equals(question.getCorrectAnswerId())) {
+//                score++;
+//            }
+//        }
+//
+//        return score;
+//
+//
+//    }
 }
 
 
