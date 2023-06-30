@@ -125,7 +125,13 @@ public class WebSocketQuizController {
 //
 //
 //        messagingTemplate.convertAndSend("/quiz/" + quizPin, sortedParticipantsMap);
-        messagingTemplate.convertAndSend("/quiz/" + quizPin, participants.get(quizPin));
+        if (participants.isEmpty()) {
+            messagingTemplate.convertAndSend("/quiz/" + quizPin, "No participants");
+        }
+        else{
+            messagingTemplate.convertAndSend("/quiz/" + quizPin, participants.get(quizPin));
+        }
+
     }
 
     private void updateScore(String quizPin, String playerId, int points) {
