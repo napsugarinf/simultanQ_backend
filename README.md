@@ -1,5 +1,6 @@
 # simultanQ_backend
-This is the backend of my final thesis at University using the Spring Boot Framework.
+
+## This is the backend of my final thesis at University using the Spring Boot Framework.
 
 The topic of my thesis is to implement an interactive quiz game without restricting
 the number of participating players using a web application.
